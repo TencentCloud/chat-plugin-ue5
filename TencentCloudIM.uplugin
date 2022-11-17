@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "TencentCloudIM",
+	"Description": "IM (Instant Messaging) is developed based on the underlying IM capabilities of QQ. It can easily integrate chat, conversation, group, data management and live barrage capabilities by simply implanting the SDK. It also supports communication with other products such as whiteboards through signaling messages. , fully cover your business scenarios, support the access and use of small programs on major platforms, and fully meet the communication needs.",
+	"Category": "TencentCloud",
+	"CreatedBy": "xingchenhe@tencent.com",
+	"CreatedByURL": "https://cloud.tencent.com/product/im",
+	"DocsURL": "https://cloud.tencent.com/product/im",
+	"MarketplaceURL": "https://cloud.tencent.com/product/im",
+	"SupportURL": "https://cloud.tencent.com/product/im",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "TencentCloudIM",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
