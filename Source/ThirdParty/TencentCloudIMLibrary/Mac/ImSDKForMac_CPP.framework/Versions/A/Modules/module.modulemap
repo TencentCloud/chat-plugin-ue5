@@ -1,6 +1,0 @@
-framework module ImSDKForMac_CPP {
-  umbrella header "ImSDKForMac_CPP.h"
-
-  export *
-  module * { export * }
-}
