@@ -26,11 +26,16 @@
 
 ###### 步骤三 下载Plugin
 
+```shell
+// 将插件重GitHub下来
+git clone https://github.com/TencentCloud/chat-plugin-ue5.git
+```
+
 
 
 ###### 步骤四 Plugin引入
 
-在项目根目录创建插件目录，命名问Plugins，将步骤三中下载的插件包引入其中，引入后可在UE5 Editor的编辑 => 插件模块查看到如图所示插件安装：
+在项目根目录创建插件目录，命名问Plugins，将步骤三中下载的插件包（Plugins/下的TencentCoudChat文件夹）引入其中，引入后可在UE5 Editor的编辑 => 插件模块查看到如图所示插件安装：
 
 ![image-20230228143510351](https://markdown-1252238885.cos.ap-guangzhou.myqcloud.com/2023-02-28-063517.png)
 
