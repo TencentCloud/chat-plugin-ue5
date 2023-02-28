@@ -27,7 +27,7 @@
 ###### 步骤三 下载Plugin
 
 ```shell
-// 将插件重GitHub下来
+// 将插件从GitHub下来
 git clone https://github.com/TencentCloud/chat-plugin-ue5.git
 ```
 
