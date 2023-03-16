@@ -4,27 +4,6 @@
 
 #include "Modules/ModuleManager.h"
 
-#if defined(ANDROID) || defined(_ANDROID_)
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMBuffer.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMCallback.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMCommon.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMConversation.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMConversationManager.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMDefine.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMErrorCode.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMFriendship.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMFriendshipManager.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMGroup.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMGroupManager.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMListener.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMManager.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMMessage.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMMessageManager.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMOfflinePushManager.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMSignaling.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMSignalingManager.h"
-#include "TencentCloudChatLibrary/Android/ImSDK_Android_CPP/include/V2TIMString.h"
-#elif defined(__APPLE__) || defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
 #include "TencentCloudChatLibrary/Includes/V2TIMBuffer.h"
 #include "TencentCloudChatLibrary/Includes/V2TIMCallback.h"
 #include "TencentCloudChatLibrary/Includes/V2TIMConversation.h"
@@ -43,15 +22,15 @@
 #include "TencentCloudChatLibrary/Includes/V2TIMSignalingManager.h"
 #include "TencentCloudChatLibrary/Includes/V2TIMString.h"
 #include "TencentCloudChatLibrary/Includes/V2TIMOfflinePushManager.h"
-#endif
 
 
 class TencentCloudChat : public IModuleInterface
 {
+private:
+    void*	ImSDKHandle;
 public:
-
-	
-	
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
 	/**
      * 1.2 添加 SDK 监听
      */

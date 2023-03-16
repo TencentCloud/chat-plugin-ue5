@@ -7,7 +7,53 @@
 // #include "TencentCloudChatLibrary/ExampleLibrary.h"
 #define LOCTEXT_NAMESPACE "TencentCloudChat"
 
+void TencentCloudChat::StartupModule()
+{
+	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 
+	// Get the base directory of this plugin
+	FString BaseDir = IPluginManager::Get().FindPlugin("TencentCloudChat")->GetBaseDir();
+
+	// Add on the relative location of the third party dll and load it
+	FString LibraryPath;
+#if PLATFORM_WINDOWS
+	LibraryPath = FPaths::Combine(*BaseDir, TEXT("Source/ThirdParty/TencentCloudChatLibrary/Windows/ImSDK_Windows_CPP/shared_lib/Win64/ImSDK.dll"));
+#elif PLATFORM_MAC
+    LibraryPath = FPaths::Combine(*BaseDir, TEXT("Source/ThirdParty/TencentCloudChatLibrary/Mac/libImSDKForMac_CPP.dylib"));
+#endif // PLATFORM_WINDOWS
+
+	ImSDKHandle = !LibraryPath.IsEmpty() ? FPlatformProcess::GetDllHandle(*LibraryPath) : nullptr;
+
+	if (ImSDKHandle)
+	{
+		// Call the test function in the third party library that opens a message box
+		 
+		//  printf("Important message: TencentCloudChatSDK is loaded");
+
+		
+
+		//  FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("ThirdPartyLibrarySuccess", "Important message: TencentCloudChatSDK is loaded"));
+	}
+	else
+	{
+		// const FText text = FText::FromString(static_cast<FString>(*LibraryPath));
+
+		// FMessageDialog::Open(EAppMsgType::Ok, text);
+		// // FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("ThirdPartyLibraryError", *LibraryPath));
+		// FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("ThirdPartyLibraryError", "Failed to load example third party library"));
+	}
+}
+
+
+void TencentCloudChat::ShutdownModule()
+{
+	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
+	// we call this function before unloading the module.
+
+	// Free the dll handle
+	FPlatformProcess::FreeDllHandle(ImSDKHandle);
+	ImSDKHandle = nullptr;
+}
 /**
  * 1.2 添加 SDK 监听
  */
