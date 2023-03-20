@@ -78,7 +78,8 @@ void TencentCloudChat::RemoveSDKListener(V2TIMSDKListener *listener)
 bool TencentCloudChat::InitSDK(uint32_t sdkAppID, const V2TIMSDKConfig &config)
 {
 
-	V2TIMManager::GetInstance()->CallExperimentalAPI("setUIPlatform", (void*)9, nullptr);
+	uint32_t param = 9;
+	V2TIMManager::GetInstance()->CallExperimentalAPI("setUIPlatform", &param, nullptr);
 	return V2TIMManager::GetInstance()->InitSDK(sdkAppID, config);
 }
 /**
