@@ -15,8 +15,9 @@
 ![image-20220912134459287](https://markdown-1252238885.cos.ap-guangzhou.myqcloud.com/2022-09-12-054459.png)
 
 启动UE5，创建UE5应用，如图所示：
+![image](https://user-images.githubusercontent.com/6051292/226270906-5b64d82e-40b8-4df5-af19-d92efc37fe3c.png)
 
-![image-20220912134635413](https://markdown-1252238885.cos.ap-guangzhou.myqcloud.com/2022-09-12-054635.png)
+
 
 其中项目默认设置中蓝图和C++、目标平台的配置，可根据业务方自己的需求进行配置，腾讯云IM UE5 Plugin对此没有限制。
 
