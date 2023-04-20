@@ -67,8 +67,14 @@ git clone https://github.com/TencentCloud/chat-plugin-ue5.git
 
 [UE5官方文档](https://docs.unrealengine.com/5.0/zh-CN/)
 
+###### 注意
+1. 引入插件且编译成功后再加入API调用测试代码
+2. 此插件只能在ue 模块中集成
+
+
 ###### 常见问题
 
 1. 在mac调试环境，如遇到提示文件已经损坏，可执行如下命令修复sudo xattr -r -d com.apple.quarantine $pathToframgeWork 
 2. 初始化传入的日志和db目录，需要应用有读写权限
-3. 插件暂不支持win32和Mac M1进行调试和编译
+3. 插件暂不支持win32进行调试和编译
+
