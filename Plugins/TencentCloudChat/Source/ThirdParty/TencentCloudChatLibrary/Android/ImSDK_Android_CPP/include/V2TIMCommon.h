@@ -63,9 +63,6 @@ DEFINE_MAP(V2TIMString, V2TIMString)
 typedef TXV2TIMStringToV2TIMStringMap V2TIMStringToV2TIMStringMap;
 typedef TXV2TIMStringToV2TIMStringMap V2TIMGroupAttributeMap;
 
-DEFINE_MAP(V2TIMString, int64_t)
-typedef TXV2TIMStringToint64_tMap V2TIMStringToInt64Map;
-
 class V2TIMLogListener;
 
 struct TIM_API V2TIMBaseObject {

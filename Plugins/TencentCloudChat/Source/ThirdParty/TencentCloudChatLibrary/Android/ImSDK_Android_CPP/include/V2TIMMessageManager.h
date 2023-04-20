@@ -48,7 +48,7 @@ public:
     virtual V2TIMMessage CreateTextMessage(const V2TIMString &text) = 0;
 
     /**
-     * 2.2 创建文本消息，并且可以附带 @ 提醒功能（该接口已弃用，推荐使用 CreateAtSignedGroupMessage 接口）
+     * 2.2 创建文本消息，并且可以附带 @ 提醒功能
      *
      *  提醒消息仅适用于在群组中发送的消息
      *
@@ -185,24 +185,6 @@ public:
      * - 定向群消息默认不计入群会话的未读计数。
      */
     virtual V2TIMMessage CreateTargetedGroupMessage(const V2TIMMessage &message, const V2TIMStringVector &receiverList) = 0;
-    
-    /**
-     *  2.14 创建带 @ 标记的群消息（7.0 及以上版本支持）
-     *
-     *  如果您需要发送的群消息附带 @ 提醒功能，可以创建一条带 @ 标记的群消息。
-     *
-     *  @param message 原始消息对象
-     *  @param atUserList 需要 @ 的用户列表，如果需要 @ALL，请传入 kImSDK_MesssageAtALL 常量字符串。
-     *  举个例子，假设该条消息希望@提醒 denny 和 lucy 两个用户，同时又希望@所有人，atUserList 传 @[@"denny",@"lucy",kImSDK_MesssageAtALL]
-     *  @return 群 @ 消息对象
-     *
-     *  @note atUserList 使用注意事项
-     *  - 默认情况下，最多支持 @ 30个用户，超过限制后，消息会发送失败。
-     *  - atUserList 的总数不能超过默认最大数，包括 @ALL。
-     *  - 直播群（AVChatRoom）不支持发送 @ 消息。
-     */
-    virtual V2TIMMessage CreateAtSignedGroupMessage(const V2TIMMessage &message, const V2TIMStringVector &atUserList) = 0;
-
 
     /////////////////////////////////////////////////////////////////////////////////
     //
@@ -477,18 +459,6 @@ public:
      * - 当多个用户同时设置或删除同一个扩展 key 时，只有第一个用户可以执行成功，其它用户会收到 23001 错误码和最新的扩展信息，在收到错误码和扩展信息后，请按需重新发起删除操作。
      */
     virtual void DeleteMessageExtensions(const V2TIMMessage &message, const V2TIMStringVector &keys, V2TIMValueCallback<V2TIMMessageExtensionResultVector> *callback) = 0;
-
-    /**
-     *  5.20 翻译文本消息
-     *
-     *  @param sourceTextList 待翻译文本数组。
-     *  @param sourceLanguage 源语言。可以设置为特定语言或 ”auto“。“auto“ 表示自动识别源语言。传空默认为 ”auto“。
-     *  @param targetLanguage 目标语言。支持的目标语言有多种，例如：英语-“en“，简体中文-”zh“，法语-”fr“，德语-”de“等。
-     *  @param callback 翻译结果回调。其中 result 的 key 为待翻译文本, value 为翻译后文本。
-     */
-    virtual void TranslateText(const V2TIMStringVector &sourceTextList,
-                               const V2TIMString &sourceLanguage, const V2TIMString &targetLanguage,
-                               V2TIMValueCallback<V2TIMStringToV2TIMStringMap> *callback) = 0;
 };
 
 #endif  // __V2TIM_MESSAGE_MANAGER_H__

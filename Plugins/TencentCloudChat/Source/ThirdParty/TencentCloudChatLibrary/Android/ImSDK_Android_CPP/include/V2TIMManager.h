@@ -145,7 +145,7 @@ public:
     virtual void RemoveSimpleMsgListener(V2TIMSimpleMsgListener *listener) = 0;
 
     /**
-     * 3.3 发送单聊普通文本消息（最大支持 12KB）
+     * 3.3 发送单聊普通文本消息（最大支持 8KB）
      *
      * 文本消息支持云端的脏词过滤，如果用户发送的消息中有敏感词，callback 回调将会返回 ERR_SVR_COMM_SENSITIVE_TEXT(80001) 错误码。
      *
@@ -155,7 +155,7 @@ public:
                                            V2TIMSendCallback *callback) = 0;
 
     /**
-     * 3.4 发送单聊自定义（信令）消息（最大支持 12KB）
+     * 3.4 发送单聊自定义（信令）消息（最大支持 8KB）
      *
      * 自定义消息本质就是一端二进制
      * buffer，您可以在其上自由组织自己的消息格式（常用于发送信令），但是自定义消息不支持云端敏感词过滤。
@@ -169,7 +169,7 @@ public:
                                              V2TIMSendCallback *callback) = 0;
 
     /**
-     * 3.5 发送群聊普通文本消息（最大支持 12KB）
+     * 3.5 发送群聊普通文本消息（最大支持 8KB）
      *
      * @param priority 设置消息的优先级，我们没有办法所有消息都能 100%
      * 送达每一个用户，但高优先级的消息会有更高的送达成功率。
@@ -184,7 +184,7 @@ public:
                                              V2TIMSendCallback *callback) = 0;
 
     /**
-     * 3.6 发送群聊自定义（信令）消息（最大支持 12KB）
+     * 3.6 发送群聊自定义（信令）消息（最大支持 8KB）
      *
      * @param priority   设置消息的优先级，我们没有办法所有消息都能 100%
      * 送达每一个用户，但高优先级的消息会有更高的送达成功率。

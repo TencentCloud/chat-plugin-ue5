@@ -76,14 +76,8 @@ public:
 
     /**
      *  1.6 获取会话列表高级接口（从 6.5 版本开始支持）
-     *
-     * @param filter 会话 filter
-     * @param nextSeq 分页拉取的游标
-     * @param count 分页拉取的个数
-     *
      */
     virtual void GetConversationListByFilter(const V2TIMConversationListFilter &filter,
-                                             uint64_t nextSeq, uint32_t count,
                                              V2TIMValueCallback<V2TIMConversationResult>* callback) = 0;
 
     /**
@@ -131,7 +125,7 @@ public:
                                  V2TIMCallback* callback) = 0;
 
     /**
-     * 1.11 标记会话（从 6.5 版本开始支持，需要您购买旗舰版套餐）
+     * 1.12 标记会话（从 6.5 版本开始支持，需要您购买旗舰版套餐）
      *
      * @param conversationIDList 会话列表
      * @param markType 会话标记类型，取值详见 @V2TIMConversationMarkType。
@@ -148,43 +142,13 @@ public:
                                   V2TIMValueCallback<V2TIMConversationOperationResultVector>* callback) = 0;
 
     /**
-     * 1.12 获取全部会话的未读总数（5.3.425 及以上版本支持）
+     * 1.13 获取会话未读总数（5.3.425 及以上版本支持）
      * @note
-     *  - 调用该接口以后，任意会话的未读数发生变化时，SDK 都会给您抛 OnTotalUnreadMessageCountChanged 回调。
      *  - 未读总数会减去设置为免打扰的会话的未读数，即消息接收选项设置为
      *  V2TIM_NOT_RECEIVE_MESSAGE 或 V2TIM_RECEIVE_NOT_NOTIFY_MESSAGE 的会话。
      */
     virtual void GetTotalUnreadMessageCount(V2TIMValueCallback<uint64_t>* callback) = 0;
 
-    /**
-     * 1.13 获取按会话 filter 过滤的未读总数（7.0 及以上版本支持）
-     *
-     * @param filter 会话 filter
-     *
-     * @note
-     *  - 未读总数会减去设置为免打扰的会话的未读数，即消息接收选项设置为
-     *  V2TIM_NOT_RECEIVE_MESSAGE 或 V2TIM_RECEIVE_NOT_NOTIFY_MESSAGE 的会话。
-     */
-    virtual void GetUnreadMessageCountByFilter(const V2TIMConversationListFilter &filter,
-        V2TIMValueCallback<uint64_t>* callback) = 0;
-
-    /**
-     *  1.14 注册监听指定 filter 的会话未读总数变化（7.0 及以上版本支持）
-     *
-     * @param filter 会话 filter
-     *
-     * @note
-     *  - 当您调用这个接口以后，该 filter 下的未读数发生变化时，SDK 会给您抛 OnUnreadMessageCountChangedByFilter 回调。
-     */
-    virtual void SubscribeUnreadMessageCountByFilter(const V2TIMConversationListFilter &filter) = 0;
-
-    /**
-     *  1.15 取消监听指定 filter 的会话未读总数变化（7.0 及以上版本支持）
-     *
-     * @param filter 会话 filter
-     *
-     */
-    virtual void UnsubscribeUnreadMessageCountByFilter(const V2TIMConversationListFilter &filter) = 0;
 
     /////////////////////////////////////////////////////////////////////////////////
     //

@@ -211,20 +211,13 @@ struct TIM_API V2TIMOfflinePushInfo {
     V2TIMString iOSSound;
     /// 离线推送声音设置（仅对 Android 生效, 仅 imsdk 6.1 及以上版本支持）
     /// 只有华为和谷歌手机支持设置铃音提示，小米铃音设置请您参照：https://dev.mi.com/console/doc/detail?pId=1278%23_3_0
-    /// 另外，谷歌手机 FCM 推送在 Android 8.0 及以上系统设置声音提示，必须调用 setAndroidFCMChannelID 设置好 channelID，才能生效。
     /// AndroidSound: Android 工程里 raw 目录中的铃声文件名，不需要后缀名。
     V2TIMString AndroidSound;
     /// 离线推送设置 OPPO 手机 8.0 系统及以上的渠道 ID（仅对 Android 生效）。
     V2TIMString AndroidOPPOChannelID;
-    /// 离线推送设置 FCM 通道手机 8.0 系统及以上的渠道 ID（仅对 Android 生效）。
-    V2TIMString AndroidFCMChannelID;
-    /// 离线推送设置小米通道手机 8.0 系统及以上的渠道 ID（仅对 Android 生效）。
-    V2TIMString AndroidXiaoMiChannelID;
     /// 离线推送设置 VIVO 手机 （仅对 Android 生效）。
     /// VIVO 手机离线推送消息分类，0：运营消息，1：系统消息。默认取值为 1 。
     int AndroidVIVOClassification;
-    /// 离线推送设置华为推送消息分类，详见：https://developer.huawei.com/consumer/cn/doc/development/HMSCore-Guides/message-classification-0000001149358835#section1076611477914
-    V2TIMString AndroidHuaWeiCategory;
 
     V2TIMOfflinePushInfo();
     V2TIMOfflinePushInfo(const V2TIMOfflinePushInfo &);

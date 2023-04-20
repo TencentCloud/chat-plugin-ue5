@@ -101,14 +101,18 @@ struct TIM_API V2TIMConversation {
 DEFINE_VECTOR(V2TIMConversation)
 typedef TXV2TIMConversationVector V2TIMConversationVector;
 
-/// 会话 filter
+/// 会话列表拉取 filter
 struct TIM_API V2TIMConversationListFilter {
-    /// C2C 或群会话(填 0 代表不过滤此项)
+    /// C2C 或群会话
     V2TIMConversationType type;
-    /// 会话分组名称(填空代表不过滤此项)
-    V2TIMString conversationGroup;
-    /// 标记类型，取值详见 @V2TIMConversationMarkType(填 0 代表不过滤此项)
+    /// 分页拉取的游标
+    uint64_t nextSeq;
+    /// 分页拉取的个数
+    uint32_t count;
+    /// 标记类型，取值详见 @V2TIMConversationMarkType
     uint64_t markType;
+    /// 会话分组名称，注意：不是群组名称，是会话分组的名称
+    V2TIMString groupName;
 
     V2TIMConversationListFilter();
     V2TIMConversationListFilter(const V2TIMConversationListFilter& filter);

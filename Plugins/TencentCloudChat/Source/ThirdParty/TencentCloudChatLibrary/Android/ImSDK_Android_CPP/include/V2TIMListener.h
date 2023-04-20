@@ -239,7 +239,7 @@ public:
 
     /**
      * 某成员信息发生变更（该群所有的成员都能收到）。
-     * @note 会议群（Meeting）和直播群（AVChatRoom）默认无此回调，如需回调，请前往 [控制台](https://console.cloud.tencent.com/im) (功能配置 -> 群组配置 -> 群系统通知配置 -> 群成员资料变更通知) 主动配置。
+     * @note 会议群（Meeting）和直播群（AVChatRoom）默认无此回调，如需回调请提交工单配置
      *
      * @param groupID 群 ID
      * @param v2TIMGroupMemberChangeInfoList 被修改的群成员信息
@@ -287,16 +287,6 @@ public:
      */
     virtual void OnGroupAttributeChanged(const V2TIMString &groupID,
                                          const V2TIMGroupAttributeMap &groupAttributeMap) {}
-
-    /**
-     * 某个已加入的群的计数器被修改了（全员能收到）
-     *
-     * @param groupID  群 ID
-     * @param key 当前变更的群计数器的 key
-     * @param newValue 变更之后的 value
-     */
-    virtual void OnGroupCounterChanged(const V2TIMString &groupID,
-                                       const V2TIMString &key, int64_t newValue) {}
 
     /**
      * 有新的加群请求（只有群主或管理员会收到）
@@ -395,8 +385,9 @@ public:
     /**
      * 14.1 有日志打印时的回调
      *
-     * @param logLevel 日志等级, 参见 V2TIMLogLevel
-     * @param logContent 日志内容
+     * @param log 日志内容
+     * @param level 日志等级 参见 TRTCLogLevel
+     * @param module 暂无具体意义，目前为固定值 TXLiteAVSDK
      */
     virtual void OnLog(V2TIMLogLevel logLevel, const V2TIMString &logContent) {}
 };
@@ -447,24 +438,14 @@ public:
     virtual void OnConversationChanged(const V2TIMConversationVector &conversationList) {}
 
     /**
-     * 全部会话未读总数变更的通知（5.3.425 及以上版本支持）
+     * 会话未读总数变更通知（5.3.425 及以上版本支持）
      *
      * @note
-     *  - 当您调用 GetTotalUnreadMessageCount 获取全部会话未读总数以后，任意会话的未读数发生变化时，SDK 都会通过该回调把最新的未读总数通知给您。
      *  - 未读总数会减去设置为免打扰的会话的未读数，即消息接收选项设置为
      *  V2TIM_NOT_RECEIVE_MESSAGE  or V2TIM_RECEIVE_NOT_NOTIFY_MESSAGE 的会话。
      */
     virtual void OnTotalUnreadMessageCountChanged(uint64_t totalUnreadCount) {}
 
-    /**
-     * 根据 filter 过滤的未读消息总数变更通知（7.0 及以上版本支持）
-     * @note
-     *  - 您可以调用 SubscribeUnreadMessageCountByFilter 注册监听指定 filter 下的未读总数变化，SDK 通过这个回调把最新的未读总数通知给您。
-     *  - 您可以注册监听多个不同 filter 下的未读总数变化，这个回调的 filter 参数就是注册监听时指定的 filter，该 filter 携带了 conversationType、conversationGroup 和 markType 三个字段，通过判断这三字段是不是都相同，来区分出不同的 filter。
-     *  - 未读总数会减去设置为免打扰的会话的未读数，即消息接收选项设置为
-     *  V2TIM_NOT_RECEIVE_MESSAGE  or V2TIM_RECEIVE_NOT_NOTIFY_MESSAGE 的会话。
-     */
-    virtual void OnUnreadMessageCountChangedByFilter(const V2TIMConversationListFilter &filter, uint64_t totalUnreadCount) {}
 
     /////////////////////////////////////////////////////////////////////////////////
     //

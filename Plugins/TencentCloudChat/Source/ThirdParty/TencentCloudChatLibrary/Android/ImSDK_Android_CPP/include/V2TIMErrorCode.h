@@ -63,7 +63,7 @@ enum V2TIMErrorCode {
     ERR_HTTP_REQ_FAILED                         = 6010,    // HTTP 请求失败，请检查 URL 地址是否合法，可在网页浏览器尝试访问该 URL 地址。
     ERR_INVALID_MSG_ELEM                        = 6016,    // IM SDK 无效消息 elem，具体可查看错误信息进一步定义哪个字段。
     ERR_INVALID_SDK_OBJECT                      = 6021,    // 无效的对象，例如用户自己生成 TIMImage 对象，或内部赋值错误导致对象无效。
-    ERR_SDK_MSG_BODY_SIZE_LIMIT                 = 8001,    // 消息长度超出限制，消息长度不要超过12k，消息长度是各个 elem 长度的总和，elem 长度是所有 elem 字段的长度总和。
+    ERR_SDK_MSG_BODY_SIZE_LIMIT                 = 8001,    // 消息长度超出限制，消息长度不要超过8k，消息长度是各个 elem 长度的总和，elem 长度是所有 elem 字段的长度总和。
     ERR_SDK_MSG_KEY_REQ_DIFFER_RSP              = 8002,    // 消息 KEY 错误，内部错误，网络请求包的 KEY 和 回复包的不一致。
     ERR_SDK_IMAGE_CONVERT_ERROR                 = 8003,    // 万象优图 HTTP 请求失败。
     ERR_SDK_IMAGE_CI_BLOCK                      = 8004,    // 万象优图因为鉴黄等原因转缩略图失败。
@@ -196,7 +196,7 @@ enum V2TIMErrorCode {
     ERR_SVR_COMM_REQ_FREQ_LIMIT_EX              = 60019,  // 请求过于频繁，请稍后重试。
     ERR_SVR_COMM_INVALID_SERVICE                = 60020,  // 未购买套餐包或购买的套餐包正在配置中暂未生效，请五分钟后再次尝试。
     ERR_SVR_COMM_SENSITIVE_TEXT                 = 80001,  // 文本安全打击，文本中可能包含敏感词汇。
-    ERR_SVR_COMM_BODY_SIZE_LIMIT                = 80002,  // 发消息包体过长，目前支持最大12k消息包体长度，请减少包体大小重试。
+    ERR_SVR_COMM_BODY_SIZE_LIMIT                = 80002,  // 发消息包体过长，目前支持最大8k消息包体长度，请减少包体大小重试。
 
     // 帐号错误码
 
@@ -313,7 +313,7 @@ enum V2TIMErrorCode {
     ERR_SVR_MSG_INTERNAL_ERROR3                 = 90995,  // 服务内部错误，请重试。
     ERR_SVR_MSG_INTERNAL_ERROR4                 = 91000,  // 服务内部错误，请重试。
     ERR_SVR_MSG_INTERNAL_ERROR5                 = 90992,  // 服务内部错误，请重试；如果所有请求都返回该错误码，且 App 配置了第三方回调，请检查 App 服务端是否正常向云通信 IM 后台服务端返回回调结果。
-    ERR_SVR_MSG_BODY_SIZE_LIMIT                 = 93000,  // JSON 数据包超长，消息包体请不要超过12k。
+    ERR_SVR_MSG_BODY_SIZE_LIMIT                 = 93000,  // JSON 数据包超长，消息包体请不要超过8k。
     ERR_SVR_MSG_LONGPOLLING_COUNT_LIMIT         = 91101,  // Web 端长轮询被踢（Web 端同时在线实例个数超出限制）。
     // 120001 - 130000,  // 单聊第三方回调返回的自定义错误码。
 

@@ -124,7 +124,7 @@ public:
      *  如果被邀请者需要处理该邀请信令，可以让邀请者在发起信令时，向每个被邀请者额外发送一条 C2C 离线推送消息，消息携带 V2TIMSignalingInfo 信息。
      *  被邀请者收到离线推送时通过 addInvitedSignaling 将 V2TIMSignalingInfo 信息告知 SDK。
      *  - 6.7 及以后的版本：
-     *  SDK 会自动同步最近 30 秒的消息。如果其中包含了未超时的邀请信令，回调 onReceiveNewInvitation。您无需再调用本接口同步邀请信令。
+     *  SDK 会自动同步最近 30 秒的消息。如果其中包含了未超时的邀请信令，回调 onReceiveNewInvitation。
      *
      *  @note 如果添加的信令信息已存在，fail callback 会抛 ERR_SDK_SIGNALING_ALREADY_EXISTS 错误码。
      */
