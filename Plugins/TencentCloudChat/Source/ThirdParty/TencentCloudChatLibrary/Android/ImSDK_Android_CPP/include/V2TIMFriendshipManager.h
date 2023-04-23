@@ -121,7 +121,9 @@ public:
     /**
      *  3.1 获取好友申请列表
      *
-     *  @note 好友申请列表包括发起的好友申请和收到的好友申请。
+     *  @note
+     *   - 好友申请列表包括发起的好友申请和收到的好友申请。
+     *   - 最多支持100个。
      */
     virtual void GetFriendApplicationList(
         V2TIMValueCallback<V2TIMFriendApplicationResult>* callback) = 0;

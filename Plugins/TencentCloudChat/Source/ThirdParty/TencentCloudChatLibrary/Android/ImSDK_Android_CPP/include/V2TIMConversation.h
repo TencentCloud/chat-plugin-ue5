@@ -91,6 +91,10 @@ struct TIM_API V2TIMConversation {
     V2TIMBuffer customData;
     /// 会话所属分组列表（从 6.5 版本开始支持）
     V2TIMStringVector conversationGroupList;
+    /// 已读消息的时间戳，仅对单聊会话生效（从 7.1 版本开始支持）
+    uint64_t c2cReadTimestamp;
+    /// 已读消息的 sequence，仅对群聊会话生效（从 7.1 版本开始支持）
+    uint64_t groupReadSequence;
 
     V2TIMConversation();
     V2TIMConversation(const V2TIMConversation& conversation);
@@ -101,18 +105,14 @@ struct TIM_API V2TIMConversation {
 DEFINE_VECTOR(V2TIMConversation)
 typedef TXV2TIMConversationVector V2TIMConversationVector;
 
-/// 会话列表拉取 filter
+/// 会话 filter
 struct TIM_API V2TIMConversationListFilter {
-    /// C2C 或群会话
+    /// C2C 或群会话(填 0 代表不过滤此项)
     V2TIMConversationType type;
-    /// 分页拉取的游标
-    uint64_t nextSeq;
-    /// 分页拉取的个数
-    uint32_t count;
-    /// 标记类型，取值详见 @V2TIMConversationMarkType
+    /// 会话分组名称(填空代表不过滤此项)
+    V2TIMString conversationGroup;
+    /// 标记类型，取值详见 @V2TIMConversationMarkType(填 0 代表不过滤此项)
     uint64_t markType;
-    /// 会话分组名称，注意：不是群组名称，是会话分组的名称
-    V2TIMString groupName;
 
     V2TIMConversationListFilter();
     V2TIMConversationListFilter(const V2TIMConversationListFilter& filter);

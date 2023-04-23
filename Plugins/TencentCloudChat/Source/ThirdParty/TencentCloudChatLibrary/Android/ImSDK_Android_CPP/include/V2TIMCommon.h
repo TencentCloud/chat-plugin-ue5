@@ -53,6 +53,10 @@ enum V2TIMReceiveMessageOpt {
 //
 /////////////////////////////////////////////////////////////////////////////////
 
+typedef uint64_t V2TIMUInt64;
+DEFINE_VECTOR(V2TIMUInt64)
+typedef TXV2TIMUInt64Vector V2TIMUInt64Vector;
+
 DEFINE_VECTOR(V2TIMString)
 typedef TXV2TIMStringVector V2TIMStringVector;
 
@@ -62,6 +66,9 @@ typedef TXV2TIMStringToV2TIMBufferMap V2TIMCustomInfo;
 DEFINE_MAP(V2TIMString, V2TIMString)
 typedef TXV2TIMStringToV2TIMStringMap V2TIMStringToV2TIMStringMap;
 typedef TXV2TIMStringToV2TIMStringMap V2TIMGroupAttributeMap;
+
+DEFINE_MAP(V2TIMString, int64_t)
+typedef TXV2TIMStringToint64_tMap V2TIMStringToInt64Map;
 
 class V2TIMLogListener;
 

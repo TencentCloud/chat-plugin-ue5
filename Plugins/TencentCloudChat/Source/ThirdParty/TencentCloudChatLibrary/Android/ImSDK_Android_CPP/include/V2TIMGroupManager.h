@@ -37,7 +37,9 @@ public:
      * @param memberList 指定初始的群成员（直播群 AVChatRoom 不支持指定初始群成员，memberList
      * 请传一个大小为 0 的 V2TIMCreateGroupMemberInfoVector）
      *
-     * @note 其他限制请参考 @ref V2TIMManager.h -> CreateGroup 注释
+     * @note
+     * - 后台限制邀请的群成员个数不能超过 20
+     * - 其他限制请参考 @ref V2TIMManager.h -> CreateGroup 注释
      */
     virtual void CreateGroup(const V2TIMGroupInfo& info,
                              const V2TIMCreateGroupMemberInfoVector& memberList,
@@ -84,22 +86,27 @@ public:
      *
      * @note
      * attributes 的使用限制如下：
-     *  - 目前只支持 AVChatRoom
-     *  - key 最多支持16个，长度限制为32字节
-     *  - value 长度限制为4k
-     *  - 总的 attributes（包括 key 和 value）限制为16k
-     *  - InitGroupAttributes、SetGroupAttributes、DeleteGroupAttributes 接口合并计算， SDK
-     * 限制为5秒10次，超过后回调8511错误码；后台限制1秒5次，超过后返回10049错误码
-     *  - GetGroupAttributes 接口 SDK 限制5秒20次
+     *  - 6.7 及其以前版本，只支持 AVChatRoom 直播群；
+     *  - 从 6.8 版本开始，同时支持 AVChatRoom、Public、Meeting、Work 四种群类型；
+     *  - 从 7.0 版本开始，除了话题外，群属性支持所有的群类型；
+     *  - key 最多支持 16 个，长度限制为 32 字节；
+     *  - value 长度限制为 4k；
+     *  - 总的 attributes（包括 key 和 value）限制为 16k；
+     *  - initGroupAttributes、setGroupAttributes、deleteGroupAttributes 接口合并计算， SDK 限制为 5 秒 10 次，超过后回调 8511 错误码；后台限制 1 秒 5 次，超过后返回 10049 错误码；
+     *  - getGroupAttributes 接口 SDK 限制 5 秒 20 次；
+     *  - 从 5.6 版本开始，当每次APP启动后初次修改群属性时，请您先调用 getGroupAttributes 拉取到最新的群属性之后，再发起修改操作；
+     *  - 从 5.6 版本开始，当多个用户同时修改同一个群属性时，只有第一个用户可以执行成功，其它用户会收到 10056 错误码；收到这个错误码之后，请您调用 getGroupAttributes 把本地保存的群属性更新到最新之后，再发起修改操作。
      */
     virtual void InitGroupAttributes(const V2TIMString& groupID,
                                      const V2TIMGroupAttributeMap& attributes,
                                      V2TIMCallback* callback) = 0;
 
     /**
-     * 2.5 设置群属性。已S有该群属性则更新其 value 值，没有该群属性则添加该属性。
+     * 2.5 设置群属性。已有该群属性则更新其 value 值，没有该群属性则添加该属性。
      * @note
-     *  - 目前只支持 AVChatRoom；
+     *   - 6.7 及其以前版本，只支持 AVChatRoom 直播群；
+     *   - 从 6.8 版本开始，同时支持 AVChatRoom、Public、Meeting、Work 四种群类型；
+     *   - 从 7.0 版本开始，除了话题外，群属性支持所有的群类型。
      */
     virtual void SetGroupAttributes(const V2TIMString& groupID,
                                     const V2TIMGroupAttributeMap& attributes,
@@ -108,7 +115,9 @@ public:
     /**
      * 2.6 删除指定群属性，keys 传大小为 0 的 V2TIMStringVector 则清空所有群属性。
      * @note
-     *  - 目前只支持 AVChatRoom；
+     *   - 6.7 及其以前版本，只支持 AVChatRoom 直播群；
+     *   - 从 6.8 版本开始，同时支持 AVChatRoom、Public、Meeting、Work 四种群类型；
+     *   - 从 7.0 版本开始，除了话题外，群属性支持所有的群类型。
      */
     virtual void DeleteGroupAttributes(const V2TIMString& groupID, const V2TIMStringVector& keys,
                                        V2TIMCallback* callback) = 0;
@@ -116,7 +125,9 @@ public:
     /**
      * 2.7 获取指定群属性，keys 传 keys 传大小为 0 的 V2TIMStringVector 则获取所有群属性。
      * @note
-     *  - 目前只支持 AVChatRoom；
+     *   - 6.7 及其以前版本，只支持 AVChatRoom 直播群；
+     *   - 从 6.8 版本开始，同时支持 AVChatRoom、Public、Meeting、Work 四种群类型；
+     *   - 从 7.0 版本开始，除了话题外，群属性支持所有的群类型。
      */
     virtual void GetGroupAttributes(const V2TIMString& groupID, const V2TIMStringVector& keys,
                                     V2TIMValueCallback<V2TIMGroupAttributeMap>* callback) = 0;
@@ -126,10 +137,62 @@ public:
      *
      * @note 请注意：
      *   - 目前只支持：直播群（AVChatRoom）。
-     *   - 该接口有频限检测，SDK 限制调用频率为60秒1次。
      */
     virtual void GetGroupOnlineMemberCount(const V2TIMString& groupID,
                                            V2TIMValueCallback<uint32_t>* callback) = 0;
+
+    /**
+     * 2.9 设置群计数器（7.0 及其以上版本支持）
+     *
+     * @note
+     *  - 该计数器的 key 如果存在，则直接更新计数器的 value 值；如果不存在，则添加该计数器的 key-value；
+     *  - 当群计数器设置成功后，在 succ 回调中会返回最终成功设置的群计数器信息；
+     *  - 除了社群和话题，群计数器支持所有的群组类型。
+     */
+    virtual void SetGroupCounters(const V2TIMString& groupID, const V2TIMStringToInt64Map& counters,
+                                  V2TIMValueCallback<V2TIMStringToInt64Map>* callback) = 0;
+
+    /**
+     * 2.10 获取群计数器（7.0 及其以上版本支持）
+     *
+     * @note
+     *  - 如果 keys 为空，则表示获取群内的所有计数器；
+     *  - 除了社群和话题，群计数器支持所有的群组类型。
+     */
+    virtual void GetGroupCounters(const V2TIMString& groupID, const V2TIMStringVector& keys,
+                                  V2TIMValueCallback<V2TIMStringToInt64Map>* callback) = 0;
+
+    /**
+     * 2.11 递增群计数器（7.0 及其以上版本支持）
+     *
+     * @param groupID 群 ID
+     * @param key 群计数器的 key
+     * @param value 群计数器的递增的变化量，计数器 key 对应的 value 变更方式为： new_value = old_value + value
+     * @param callback 如果成功，会返回当前计数器做完递增操作后的 value
+     *
+     * @note
+     *  - 该计数器的 key 如果存在，则直接在当前值的基础上根据传入的 value 作递增操作；反之，添加 key，并在默认值为 0 的基础上根据传入的 value 作递增操作；
+     *  - 除了社群和话题，群计数器支持所有的群组类型。
+     */
+    virtual void IncreaseGroupCounter(const V2TIMString& groupID,
+                                      const V2TIMString& key, int64_t value,
+                                      V2TIMValueCallback<V2TIMStringToInt64Map>* callback) = 0;
+
+    /**
+     * 2.12 递减群计数器（7.0 及其以上版本支持）
+     *
+     * @param groupID 群 ID
+     * @param key 群计数器的 key
+     * @param value 群计数器的递减的变化量，计数器 key 对应的 value 变更方式为： new_value = old_value - value
+     * @param callback 如果成功，会返回当前计数器做完递减操作后的 value
+     *
+     * @note
+     *  - 该计数器的 key 如果存在，则直接在当前值的基础上根据传入的 value 作递减操作；反之，添加 key，并在默认值为 0 的基础上根据传入的 value 作递减操作
+     *  - 除了社群和话题，群计数器支持所有的群组类型。
+     */
+    virtual void DecreaseGroupCounter(const V2TIMString& groupID,
+                                      const V2TIMString& key, int64_t value,
+                                      V2TIMValueCallback<V2TIMStringToInt64Map>* callback) = 0;
 
     /////////////////////////////////////////////////////////////////////////////////
     //                         群成员管理
@@ -201,6 +264,7 @@ public:
      * - 会议群（Meeting）和公开群（Public）：只有通过rest api 使用 App
      * 管理员身份才可以邀请其他人进群。
      * - 直播群（AVChatRoom）：不支持此功能。
+     * - 后台限制单次邀请的群成员个数不能超过 20。
      */
     virtual void InviteUserToGroup(
         const V2TIMString& groupID, const V2TIMStringVector& userList,
@@ -266,6 +330,7 @@ public:
 
     /**
      * 4.1 获取加群申请列表
+     * @note 最多支持50个
      */
     virtual void GetGroupApplicationList(
         V2TIMValueCallback<V2TIMGroupApplicationResult>* callback) = 0;

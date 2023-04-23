@@ -42,8 +42,10 @@ enum V2TIMGroupInfoChangeType {
     V2TIM_GROUP_INFO_CHANGE_TYPE_SHUT_UP_ALL = 0x08,
     ///< 消息接收选项变更
     V2TIM_GROUP_INFO_CHANGE_TYPE_RECEIVE_MESSAGE_OPT = 0x0A,
-    ///< 加群选项变更
+    ///< 申请加群方式下管理员审批选项变更
     V2TIM_GROUP_INFO_CHANGE_TYPE_GROUP_ADD_OPT = 0x0B,
+    ///< 邀请进群方式下管理员审批选项变更
+    V2TIM_GROUP_INFO_CHANGE_TYPE_GROUP_APPROVE_OPT = 0x0C,
 };
 
 /// 加群选项
@@ -68,7 +70,7 @@ enum V2TIMGroupInfoModifyFlag {
     V2TIM_GROUP_INFO_MODIFY_FLAG_INTRODUCTION = 0x01 << 2,
     // 头像
     V2TIM_GROUP_INFO_MODIFY_FLAG_FACE_URL = 0x01 << 3,
-    // 加群选项
+    // 申请加群管理员审批选项
     V2TIM_GROUP_INFO_MODIFY_FLAG_GROUP_ADD_OPTION = 0x01 << 4,
     // 禁言
     V2TIM_GROUP_INFO_MODIFY_FLAG_SHUTUP_ALL = 0x01 << 8,
@@ -76,6 +78,8 @@ enum V2TIMGroupInfoModifyFlag {
     V2TIM_GROUP_INFO_MODIFY_FLAG_CUSTOM_INFO = 0x01 << 9,
     // 话题自定义字段
     V2TIM_TOPIC_INFO_MODIFY_FLAG_CUSTOM_STRING = 0x1 << 11,
+    // 邀请进群管理员审批选项
+    V2TIM_GROUP_INFO_MODIFY_FLAG_GROUP_APPROVE_OPTION = 0x1 << 12,
 };
 
 ///  群组操作结果
@@ -86,7 +90,7 @@ enum V2TIMGroupMemberResult {
     V2TIM_GROUP_MEMBER_RESULT_SUCC = 1,
     /// 无效操作，加群时已经是群成员，移除群组时不在群内
     V2TIM_GROUP_MEMBER_RESULT_INVALID = 2,
-    /// 等待处理，邀请入群时等待对方处理
+    /// 等待处理，邀请入群时等待审批
     V2TIM_GROUP_MEMBER_RESULT_PENDING = 3,
     /// 操作失败，创建群指定初始群成员列表或邀请入群时，被邀请者加入的群总数超限
     V2TIM_GROUP_MEMBER_RESULT_OVERLIMIT = 4,
@@ -119,11 +123,13 @@ enum V2TIMGroupMemberInfoModifyFlag {
 };
 
 /// 群组未决请求类型
-enum V2TIMGroupApplicationGetType {
+enum V2TIMGroupApplicationType {
     /// 申请入群
-    V2TIM_GROUP_APPLICATION_GET_TYPE_JOIN = 0x0,
-    /// 邀请入群
-    V2TIM_GROUP_APPLICATION_GET_TYPE_INVITE = 0x1,
+    V2TIM_GROUP_JOIN_APPLICATION_NEED_APPROVED_BY_ADMIN = 0x0,
+    /// 等待被邀请者同意的邀请入群请求
+    V2TIM_GROUP_INVITE_APPLICATION_NEED_APPROVED_BY_INVITEE = 0x1,
+    /// 等待被群主或管理员审批的邀请入群请求
+    V2TIM_GROUP_INVITE_APPLICATION_NEED_APPROVED_BY_ADMIN = 0x2,
 };
 
 /// 群组已决标志
@@ -237,8 +243,10 @@ struct TIM_API V2TIMGroupChangeInfo {
     bool boolValue;
     
     /// 根据变更类型表示不同的值
-    /// 当前只有 type = V2TIM_GROUP_INFO_CHANGE_TYPE_RECEIVE_MESSAGE_OPT 和 V2TIM_GROUP_INFO_CHANGE_TYPE_GROUP_ADD_OPT 时有效
-    /// 从 6.5 版本开始支持
+    /// @note 仅针对以下类型有效：
+    /// - 从 6.5 版本开始，当 type 为 V2TIM_GROUP_INFO_CHANGE_TYPE_RECEIVE_MESSAGE_OPT 时，该字段标识了群消息接收选项发生了变化，其取值详见 @V2TIMReceiveMessageOpt；
+    /// - 从 6.5 版本开始，当 type 为 V2TIM_GROUP_INFO_CHANGE_TYPE_GROUP_ADD_OPT 时，该字段标识了申请加群审批选项发生了变化，其取值详见 @V2TIMGroupAddOpt;
+    /// - 从 7.1 版本开始，当 type 为 V2TIM_GROUP_INFO_CHANGE_TYPE_GROUP_APPROVE_OPT 时，该字段标识了邀请进群审批选项发生了变化，取值类型详见 @V2TIMGroupAddOpt。
     uint32_t intValue;
 
     V2TIMGroupChangeInfo();
@@ -313,8 +321,12 @@ struct TIM_API V2TIMGroupInfo {
     V2TIMString owner;
     /// 群创建时间
     uint32_t createTime;
-    /// 加群是否需要管理员审批，工作群（Work）不能主动加入，不支持此设置项
+    /// 申请进群是否需要管理员审批：工作群（Work）默认值为 V2TIM_GROUP_ADD_FORBID，即默认不允许申请入群，您可以修改该字段打开申请入群方式。
     V2TIMGroupAddOpt groupAddOpt;
+    /// 邀请进群是否需要管理员审批 （从 7.1 版本开始支持）
+    /// - 除工作群（Work）之外的其他群类型默认值都为 V2TIM_GROUP_ADD_FORBID，即默认不允许邀请入群，您可以修改该字段打开邀请入群方式。
+    /// - 直播群、社群和话题默认不允许邀请入群，也不支持修改。
+    V2TIMGroupAddOpt groupApproveOpt;
     /// 群最近一次群资料修改时间
     uint32_t lastInfoTime;
     /// 群最近一次发消息时间
@@ -480,7 +492,7 @@ struct TIM_API V2TIMGroupApplication : V2TIMBaseObject {
     /// 审批信息：同意或拒绝信息
     V2TIMString handledMsg;
     /// 请求类型
-    V2TIMGroupApplicationGetType getType;
+    V2TIMGroupApplicationType applicationType;
     /// 处理标志
     V2TIMGroupApplicationHandleStatus handleStatus;
     /// 处理结果

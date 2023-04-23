@@ -48,7 +48,7 @@ public:
     virtual V2TIMMessage CreateTextMessage(const V2TIMString &text) = 0;
 
     /**
-     * 2.2 创建文本消息，并且可以附带 @ 提醒功能
+     * 2.2 创建文本消息，并且可以附带 @ 提醒功能（该接口已弃用，推荐使用 CreateAtSignedGroupMessage 接口）
      *
      *  提醒消息仅适用于在群组中发送的消息
      *
@@ -185,6 +185,24 @@ public:
      * - 定向群消息默认不计入群会话的未读计数。
      */
     virtual V2TIMMessage CreateTargetedGroupMessage(const V2TIMMessage &message, const V2TIMStringVector &receiverList) = 0;
+    
+    /**
+     *  2.14 创建带 @ 标记的群消息（7.0 及以上版本支持）
+     *
+     *  如果您需要发送的群消息附带 @ 提醒功能，可以创建一条带 @ 标记的群消息。
+     *
+     *  @param message 原始消息对象
+     *  @param atUserList 需要 @ 的用户列表，如果需要 @ALL，请传入 kImSDK_MesssageAtALL 常量字符串。
+     *  举个例子，假设该条消息希望@提醒 denny 和 lucy 两个用户，同时又希望@所有人，atUserList 传 @[@"denny",@"lucy",kImSDK_MesssageAtALL]
+     *  @return 群 @ 消息对象
+     *
+     *  @note atUserList 使用注意事项
+     *  - 默认情况下，最多支持 @ 30个用户，超过限制后，消息会发送失败。
+     *  - atUserList 的总数不能超过默认最大数，包括 @ALL。
+     *  - 直播群（AVChatRoom）不支持发送 @ 消息。
+     */
+    virtual V2TIMMessage CreateAtSignedGroupMessage(const V2TIMMessage &message, const V2TIMStringVector &atUserList) = 0;
+
 
     /////////////////////////////////////////////////////////////////////////////////
     //
@@ -304,28 +322,7 @@ public:
     virtual void ModifyMessage(const V2TIMMessage &message, V2TIMCompleteCallback<V2TIMMessage> *callback) = 0;
 
     /**
-     * 5.4 标记单聊会话已读
-     * @note 请注意：
-     *  - 该接口调用成功后，自己的未读数会清 0，对端用户会收到 OnRecvC2CReadReceipt 回调，回调里面会携带标记会话已读的时间。
-     *  - 从 5.8 版本开始，当 userID 为 nil 时，标记所有单聊会话为已读状态。
-     */
-    virtual void MarkC2CMessageAsRead(const V2TIMString &userID, V2TIMCallback *callback) = 0;
-
-    /**
-     * 5.5 标记群组会话已读
-      *  @note 请注意：
-      *  - 该接口调用成功后，自己的未读数会清 0。
-      *  - 从 5.8 版本开始，当 groupID 为 nil 时，标记所有群组会话为已读状态。
-     */
-    virtual void MarkGroupMessageAsRead(const V2TIMString &groupID, V2TIMCallback *callback) = 0;
-
-    /**
-     * 5.6 标记所有会话为已读 （5.8 及其以上版本支持）
-     */
-    virtual void MarkAllMessageAsRead(V2TIMCallback *callback) = 0;
-
-    /**
-     * 5.7 删除本地及云端的消息
+     * 5.4 删除本地及云端的消息
      *
      *  @note 该接口删除本地及云端的消息，且无法恢复。需要注意的是：
      *  - 一次最多只能删除 30 条消息
@@ -337,7 +334,7 @@ public:
     virtual void DeleteMessages(const V2TIMMessageVector &messages, V2TIMCallback *callback) = 0;
 
     /**
-     * 5.8 清空单聊本地及云端的消息（不删除会话）
+     * 5.5 清空单聊本地及云端的消息（不删除会话）
      * <p> 5.4.666 及以上版本支持
      *
      * @note 请注意：
@@ -347,7 +344,7 @@ public:
     virtual void ClearC2CHistoryMessage(const V2TIMString &userID, V2TIMCallback *callback) = 0;
 
     /**
-     * 5.9 清空群聊本地及云端的消息（不删除会话）
+     * 5.6 清空群聊本地及云端的消息（不删除会话）
      * <p> 5.4.666 及以上版本支持
      *
      * @note 请注意：
@@ -356,7 +353,7 @@ public:
     virtual void ClearGroupHistoryMessage(const V2TIMString &groupID, V2TIMCallback *callback) = 0;
 
     /**
-     * 5.10 向群组消息列表中添加一条消息
+     * 5.7 向群组消息列表中添加一条消息
      *
      * 该接口主要用于满足向群组聊天会话中插入一些提示性消息的需求，比如“您已经退出该群”，这类消息有展示
      * 在聊天消息区的需求，但并没有发送给其他人的必要。
@@ -371,7 +368,7 @@ public:
         V2TIMValueCallback<V2TIMMessage> *callback) = 0;
 
     /**
-     *  5.11 向C2C消息列表中添加一条消息
+     *  5.8 向C2C消息列表中添加一条消息
      *
      *  该接口主要用于满足向C2C聊天会话中插入一些提示性消息的需求，比如“您已成功发送消息”，这类消息有展示
      *  在聊天消息去的需求，但并没有发送给对方的必要。
@@ -385,14 +382,14 @@ public:
         V2TIMValueCallback<V2TIMMessage> *callback) = 0;
 
     /**
-     * 5.12 根据 messageID 查询指定会话中的本地消息
+     * 5.9 根据 messageID 查询指定会话中的本地消息
      * @param messageIDList 消息 ID 列表
      */
     virtual void FindMessages(const V2TIMStringVector &messageIDList,
                               V2TIMValueCallback<V2TIMMessageVector> *callback) = 0;
 
     /**
-     * 5.13 搜索本地消息（5.4.666 及以上版本支持，需要您购买旗舰版套餐）
+     * 5.10 搜索本地消息（5.4.666 及以上版本支持，需要您购买旗舰版套餐）
      * @param searchParam 消息搜索参数，详见 V2TIMMessageSearchParam 的定义
      * @note 该功能为 IM 旗舰版功能，[购买旗舰版套餐包](https://buy.cloud.tencent.com/avc?from=17474)后可使用，详见[价格说明](https://cloud.tencent.com/document/product/269/11673?from=17176#.E5.9F.BA.E7.A1.80.E6.9C.8D.E5.8A.A1.E8.AF.A6.E6.83.85)
      */
@@ -400,7 +397,7 @@ public:
                                      V2TIMValueCallback<V2TIMMessageSearchResult> *callback) = 0;
 
     /**
-     *  5.14 发送消息已读回执（6.1 及其以上版本支持）
+     *  5.11 发送消息已读回执（6.1 及其以上版本支持）
      * 
      * @note 请注意：
      * - 该功能为旗舰版功能，[购买旗舰版套餐包](https://buy.cloud.tencent.com/avc?from=17485)后可使用，详见[价格说明](https://cloud.tencent.com/document/product/269/11673?from=17221#.E5.9F.BA.E7.A1.80.E6.9C.8D.E5.8A.A1.E8.AF.A6.E6.83.85)。
@@ -411,7 +408,7 @@ public:
     virtual void SendMessageReadReceipts(const V2TIMMessageVector &messageList, V2TIMCallback *callback) = 0;
 
     /**
-     *  5.15 获取消息已读回执（6.1 及其以上版本支持）
+     *  5.12 获取消息已读回执（6.1 及其以上版本支持）
      * @param messageList 消息列表
      *
      * @note 请注意：
@@ -422,7 +419,7 @@ public:
     virtual void GetMessageReadReceipts(const V2TIMMessageVector &messageList, V2TIMValueCallback<V2TIMMessageReceiptVector> *callback) = 0;
 
     /**
-     * 5.16 获取群消息已读群成员列表（6.1 及其以上版本支持）
+     * 5.13 获取群消息已读群成员列表（6.1 及其以上版本支持）
      * @param message 群消息
      * @param filter  指定拉取已读或未读群成员列表。
      * @param nextSeq 分页拉取的游标，第一次默认取传 0，后续分页拉取时，传上一次分页拉取成功回调里的 nextSeq。
@@ -435,7 +432,7 @@ public:
     virtual void GetGroupMessageReadMemberList(const V2TIMMessage &message, V2TIMGroupMessageReadMembersFilter filter, uint64_t nextSeq, uint32_t count, V2TIMValueCallback<V2TIMGroupMessageReadMemberList> *callback) = 0;
 
     /**
-     * 5.17 设置消息扩展（6.7 及其以上版本支持，需要您购买旗舰版套餐）
+     * 5.14 设置消息扩展（6.7 及其以上版本支持，需要您购买旗舰版套餐）
      * @param message 消息对象，消息需满足三个条件：1、消息发送前需设置 supportMessageExtension 为 true，2、消息必须是发送成功的状态，3、消息不能是社群（Community）和直播群（AVChatRoom）消息。
      * @param extensions 扩展信息，如果扩展 key 已经存在，则修改扩展的 value 信息，如果扩展 key 不存在，则新增扩展。
      *
@@ -447,18 +444,51 @@ public:
     virtual void SetMessageExtensions(const V2TIMMessage &message, const V2TIMMessageExtensionVector &extensions, V2TIMValueCallback<V2TIMMessageExtensionResultVector> *callback) = 0;
 
     /**
-     * 5.18 获取消息扩展（6.7 及其以上版本支持，需要您购买旗舰版套餐）
+     * 5.15 获取消息扩展（6.7 及其以上版本支持，需要您购买旗舰版套餐）
      */
     virtual void GetMessageExtensions(const V2TIMMessage &message, V2TIMValueCallback<V2TIMMessageExtensionVector> *callback) = 0;
 
     /**
-     * 5.19 删除消息扩展（6.7 及其以上版本支持，需要您购买旗舰版套餐）
+     * 5.16 删除消息扩展（6.7 及其以上版本支持，需要您购买旗舰版套餐）
      * @param keys 消息扩展 key 列表, 单次最大支持删除 20 个消息扩展，如果设置为 nil ，表示删除所有消息扩展
      *
      * @note
      * - 当多个用户同时设置或删除同一个扩展 key 时，只有第一个用户可以执行成功，其它用户会收到 23001 错误码和最新的扩展信息，在收到错误码和扩展信息后，请按需重新发起删除操作。
      */
     virtual void DeleteMessageExtensions(const V2TIMMessage &message, const V2TIMStringVector &keys, V2TIMValueCallback<V2TIMMessageExtensionResultVector> *callback) = 0;
+
+    /**
+     *  5.17 翻译文本消息
+     *
+     *  @param sourceTextList 待翻译文本数组。
+     *  @param sourceLanguage 源语言。可以设置为特定语言或 ”auto“。“auto“ 表示自动识别源语言。传空默认为 ”auto“。
+     *  @param targetLanguage 目标语言。支持的目标语言有多种，例如：英语-“en“，简体中文-”zh“，法语-”fr“，德语-”de“等。详情请参考文档：[文本翻译语言支持](https://cloud.tencent.com/document/product/269/85380#.E6.96.87.E6.9C.AC.E7.BF.BB.E8.AF.91.E8.AF.AD.E8.A8.80.E6.94.AF.E6.8C.81)。
+     *  @param callback 翻译结果回调。其中 result 的 key 为待翻译文本, value 为翻译后文本。
+     */
+    virtual void TranslateText(const V2TIMStringVector &sourceTextList,
+                               const V2TIMString &sourceLanguage, const V2TIMString &targetLanguage,
+                               V2TIMValueCallback<V2TIMStringToV2TIMStringMap> *callback) = 0;
+
+    /**
+     * 5.18 标记单聊会话已读（待废弃接口，请使用 CleanConversationUnreadMessageCount 接口）
+     * @note 请注意：
+     *  - 该接口调用成功后，自己的未读数会清 0，对端用户会收到 OnRecvC2CReadReceipt 回调，回调里面会携带标记会话已读的时间。
+     *  - 从 5.8 版本开始，当 userID 为 nil 时，标记所有单聊会话为已读状态。
+     */
+    virtual void MarkC2CMessageAsRead(const V2TIMString &userID, V2TIMCallback *callback) = 0;
+
+    /**
+     * 5.19 标记群组会话已读（待废弃接口，请使用 CleanConversationUnreadMessageCount 接口）
+      *  @note 请注意：
+      *  - 该接口调用成功后，自己的未读数会清 0。
+      *  - 从 5.8 版本开始，当 groupID 为 nil 时，标记所有群组会话为已读状态。
+     */
+    virtual void MarkGroupMessageAsRead(const V2TIMString &groupID, V2TIMCallback *callback) = 0;
+
+    /**
+     * 5.20 标记所有会话为已读（待废弃接口，请使用 CleanConversationUnreadMessageCount 接口）
+     */
+    virtual void MarkAllMessageAsRead(V2TIMCallback *callback) = 0;
 };
 
 #endif  // __V2TIM_MESSAGE_MANAGER_H__

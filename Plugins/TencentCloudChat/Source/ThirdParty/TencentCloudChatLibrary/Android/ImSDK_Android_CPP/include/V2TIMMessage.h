@@ -103,8 +103,7 @@ enum V2TIMGroupTipsType {
     V2TIM_GROUP_TIPS_TYPE_SET_ADMIN = 0x05,
     ///< 取消管理员 (opMember 取消 memberList 管理员身份)
     V2TIM_GROUP_TIPS_TYPE_CANCEL_ADMIN = 0x06,
-    ///< 群资料变更 (opMember 修改群资料： groupName & introduction & notification & faceUrl & owner
-    ///< & custom)
+    ///< 群资料变更 (opMember 修改群资料： groupName & introduction & notification & faceUrl & owner & allMute & custom)
     V2TIM_GROUP_TIPS_TYPE_GROUP_INFO_CHANGE = 0x07,
     ///< 群成员资料变更 (opMember 修改群成员资料：muteTime)
     V2TIM_GROUP_TIPS_TYPE_MEMBER_INFO_CHANGE = 0x08,
@@ -211,13 +210,20 @@ struct TIM_API V2TIMOfflinePushInfo {
     V2TIMString iOSSound;
     /// 离线推送声音设置（仅对 Android 生效, 仅 imsdk 6.1 及以上版本支持）
     /// 只有华为和谷歌手机支持设置铃音提示，小米铃音设置请您参照：https://dev.mi.com/console/doc/detail?pId=1278%23_3_0
+    /// 另外，谷歌手机 FCM 推送在 Android 8.0 及以上系统设置声音提示，必须调用 setAndroidFCMChannelID 设置好 channelID，才能生效。
     /// AndroidSound: Android 工程里 raw 目录中的铃声文件名，不需要后缀名。
     V2TIMString AndroidSound;
     /// 离线推送设置 OPPO 手机 8.0 系统及以上的渠道 ID（仅对 Android 生效）。
     V2TIMString AndroidOPPOChannelID;
+    /// 离线推送设置 FCM 通道手机 8.0 系统及以上的渠道 ID（仅对 Android 生效）。
+    V2TIMString AndroidFCMChannelID;
+    /// 离线推送设置小米通道手机 8.0 系统及以上的渠道 ID（仅对 Android 生效）。
+    V2TIMString AndroidXiaoMiChannelID;
     /// 离线推送设置 VIVO 手机 （仅对 Android 生效）。
     /// VIVO 手机离线推送消息分类，0：运营消息，1：系统消息。默认取值为 1 。
     int AndroidVIVOClassification;
+    /// 离线推送设置华为推送消息分类，详见：https://developer.huawei.com/consumer/cn/doc/development/HMSCore-Guides/message-classification-0000001149358835
+    V2TIMString AndroidHuaWeiCategory;
 
     V2TIMOfflinePushInfo();
     V2TIMOfflinePushInfo(const V2TIMOfflinePushInfo &);
@@ -365,6 +371,12 @@ struct TIM_API V2TIMMessage : V2TIMBaseObject {
     /// 消息是否不计入会话 lastMsg：默认为 false，表明需要计入会话 lastMsg，设置为
     /// true，表明不需要计入会话 lastMsg
     bool isExcludedFromLastMessage;
+    /// 消息是否不过内容审核（包含【本地审核】和【云端审核】）
+    /// 只有在开通【本地审核】或【云端审核】功能后，isExcludedFromContentModeration 设置才有效，设置为 true，表明不过内容审核，设置为 false：表明过内容审核。
+    ///【本地审核】开通流程请参考 [本地审核功能](https://cloud.tencent.com/document/product/269/83795#.E6.9C.AC.E5.9C.B0.E5.AE.A1.E6.A0.B8.E5.8A.9F.E8.83.BD)
+    ///【云端审核】开通流程请参考 [云端审核功能](https://cloud.tencent.com/document/product/269/83795#.E4.BA.91.E7.AB.AF.E5.AE.A1.E6.A0.B8.E5.8A.9F.E8.83.BD)
+    bool isExcludedFromContentModeration;
+
     /// 消息的离线推送信息
     V2TIMOfflinePushInfo offlinePushInfo;
     /// 仅供 SDK 内部使用，如果您想判断消息自己是否已读，请使用 IsRead()
@@ -938,12 +950,10 @@ struct TIM_API V2TIMMessageListGetOption {
      * 拉取消息的起始消息
      *
      * @note 请注意，
-     * <p>拉取 C2C 消息，只能使用 lastMsg 作为消息的拉取起点；如果没有指定
-     * lastMsg，默认使用会话的最新消息作为拉取起点。 <p>拉取 Group 消息时，除了可以使用 lastMsg
-     * 作为消息的拉取起点外，也可以使用 lastMsgSeq 来指定消息的拉取起点，二者的区别在于：
+     * <p>拉取 C2C 消息，只能使用 lastMsg 作为消息的拉取起点；如果没有指定 lastMsg，默认使用会话的最新消息作为拉取起点。
+     * <p>拉取 Group 消息时，除了可以使用 lastMsg 作为消息的拉取起点外，也可以使用 lastMsgSeq 来指定消息的拉取起点，二者的区别在于：
      * - 使用 lastMsg 作为消息的拉取起点时，返回的消息列表里不包含当前设置的 lastMsg；
-     * - 使用 lastMsgSeq 作为消息拉取起点时，返回的消息列表里包含当前设置的 lastMsgSeq
-     * 所表示的消息。
+     * - 使用 lastMsgSeq 作为消息拉取起点时，返回的消息列表里包含当前设置的 lastMsgSeq 所表示的消息。
      *
      * @note 在拉取 Group 消息时，
      * <p>如果同时指定了 lastMsg 和 lastMsgSeq，SDK 优先使用 lastMsg 作为消息的拉取起点。
@@ -961,18 +971,27 @@ struct TIM_API V2TIMMessageListGetOption {
      *
      * @note
      * <p> 时间范围的方向由参数 getType 决定
-     * <p> 如果 getType 取 V2TIM_GET_CLOUD_OLDER_MSG/V2TIM_GET_LOCAL_OLDER_MSG，表示从 getTimeBegin
-     * 开始，过去的一段时间，时间长度由 getTimePeriod 决定 <p> 如果 getType 取
-     * V2TIM_GET_CLOUD_NEWER_MSG/V2TIM_GET_LOCAL_NEWER_MSG，表示从 getTimeBegin
-     * 开始，未来的一段时间，时间长度由 getTimePeriod 决定 <p>
-     * 取值范围区间为闭区间，包含起止时间，二者关系如下：
-     * - 如果 getType 指定了朝消息时间更老的方向拉取，则时间范围表示为 [getTimeBegin-getTimePeriod,
-     * getTimeBegin]
-     * - 如果 getType 指定了朝消息时间更新的方向拉取，则时间范围表示为 [getTimeBegin,
-     * getTimeBegin+getTimePeriod]
+     * <p> 如果 getType 取 V2TIM_GET_CLOUD_OLDER_MSG/V2TIM_GET_LOCAL_OLDER_MSG，表示从 getTimeBegin 开始，过去的一段时间，时间长度由 getTimePeriod 决定
+     * <p> 如果 getType 取 V2TIM_GET_CLOUD_NEWER_MSG/V2TIM_GET_LOCAL_NEWER_MSG，表示从 getTimeBegin 开始，未来的一段时间，时间长度由 getTimePeriod 决定
+     * <p> 取值范围区间为闭区间，包含起止时间，二者关系如下：
+     * - 如果 getType 指定了朝消息时间更老的方向拉取，则时间范围表示为 [getTimeBegin-getTimePeriod, getTimeBegin]
+     * - 如果 getType 指定了朝消息时间更新的方向拉取，则时间范围表示为 [getTimeBegin, getTimeBegin+getTimePeriod]
      */
     int64_t getTimeBegin;
     int64_t getTimePeriod;
+
+    /**
+     * 拉取群组历史消息时，支持按照消息序列号 seq 拉取（从 7.1 版本开始有效）
+     *
+     * @note
+     * - 仅拉取群组历史消息时有效；
+     * - 消息序列号 seq 可以通过 V2TIMMessage 对象的 seq 字段获取；
+     * - 当 getType 设置为从云端拉取时，会将本地存储消息列表与云端存储消息列表合并后返回；如果无网络，则直接返回本地消息列表；
+     * - 当 getType 设置为从本地拉取时，直接返回本地的消息列表；
+     * - 当 getType 设置为拉取更旧的消息时，消息列表按照时间逆序，也即消息按照时间戳从大往小的顺序排序；
+     * - 当 getType 设置为拉取更新的消息时，消息列表按照时间顺序，也即消息按照时间戳从小往大的顺序排序。
+     */
+    V2TIMUInt64Vector messageSeqList;
 
     V2TIMMessageListGetOption();
     V2TIMMessageListGetOption(const V2TIMMessageListGetOption &);
