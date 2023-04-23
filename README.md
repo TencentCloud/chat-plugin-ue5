@@ -1,5 +1,10 @@
 ### 腾讯云IM UE5 Plugin集成
 
+###### 注意
+1. 引入插件且编译成功后再加入API调用测试代码
+2. 此插件只能在ue 模块中集成
+3. 安卓端TencentCloudChat::InitSDK的调用必须放在子线程中，其他api的调用可以放在任意线程
+
 ###### 步骤一 在腾讯云IM 控制台创建应用
 
 登录到[腾讯云IM控制台](https://console.cloud.tencent.com/im)，如图所示创建IM应用：
@@ -66,10 +71,6 @@ git clone https://github.com/TencentCloud/chat-plugin-ue5.git
 [API文档](https://im.sdk.qcloud.com/doc/zh-cn/classV2TIMManager.html)
 
 [UE5官方文档](https://docs.unrealengine.com/5.0/zh-CN/)
-
-###### 注意
-1. 引入插件且编译成功后再加入API调用测试代码
-2. 此插件只能在ue 模块中集成
 
 
 ###### 常见问题
