@@ -7,19 +7,13 @@
 #include "CoreMinimal.h"
 #include "HAL/Runnable.h"
 // #include "TencentCloudChatLibrary/ExampleLibrary.h"
-
 class InitSDKRunner : public FRunnable
 {
 public:
     virtual uint32 Run() override
     {
-		try {
-            // 在子线程中执行的函数
-            ReturnValue = V2TIMManager::GetInstance()->InitSDK(sdkAppID, config);
-        } catch (const std::exception& e) {
-            // 处理异常情况，例如记录日志或返回错误值
-            ReturnValue = false;
-        }
+        // 在子线程中执行的函数
+		ReturnValue = V2TIMManager::GetInstance()->InitSDK(sdkAppID, config);
         return 0;
     }
 	void SetParam(uint32_t _sdkAppID,  V2TIMSDKConfig _config)
@@ -108,30 +102,22 @@ void TencentCloudChat::RemoveSDKListener(V2TIMSDKListener *listener)
  * @return true：成功；false：失败
  */
 bool TencentCloudChat::InitSDK(uint32_t sdkAppID, const V2TIMSDKConfig &config)
-{	
+{
+
 	uint32_t param = 9;
 	V2TIMManager::GetInstance()->CallExperimentalAPI("setUIPlatform", &param, nullptr);
 
 	InitSDKRunner* InitSDKRunnable = new InitSDKRunner();
 
-	if (InitSDKRunnable == nullptr) {
-		// 处理内存分配失败的情况
-		return false;
-	}
-
 	InitSDKRunnable->SetParam(sdkAppID,config);
     // 创建子线程并启动
     FRunnableThread* InitSDKThread = FRunnableThread::Create(InitSDKRunnable, TEXT("InitSDKThread"));
-	if (InitSDKThread == nullptr) {
-		// 处理线程创建失败的情况
-		delete InitSDKRunnable; // 释放资源
-		return false;
-	}
+
     // 等待子线程结束
     InitSDKThread->WaitForCompletion();
 
 	bool ret = InitSDKRunnable->GetReturnValue();
-    // 释放资源
+    // // 释放资源
     delete InitSDKThread;
 
     delete InitSDKRunnable;
